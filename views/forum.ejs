@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<%- include("./partials/head.ejs") %>
+
+    <%- include("./partials/home.ejs") %>
+        <link rel="stylesheet" href="/stylesheets/chat.css">
+        </br>
+        </br>
+        </br>
+
+        <h2>
+            <%= course.name %> forum
+        </h2>
+        <div id="chat">
+            <% msgs.forEach(function(msg){ %>
+
+                <% if(msg.sender !=user.username){ %>
+                    <div class="received-msg">
+                        <% } else { %>
+                            <div class="sent-msg">
+                                <% } %>
+                                    <img src="/images/blackhat.png" class="inlineIcon">
+                                    <div class="otherBubble other">
+                                        <% if(course.creator==msg.sender){ %>
+                                            <b style="color: orange;">
+                                                <%= msg.sender %> (Course Instructor)
+                                            </b>
+                                            <% } else { %>
+                                                <b>
+                                                    <%= msg.sender %>
+                                                </b>
+                                                <% } %>
+                                                    </br>
+                                                    <%= msg.content %>
+                                                        </br>
+                                    </div>
+                                    <span class="other">
+                                        <%= msg.time %>
+                                    </span>
+
+                            </div>
+
+                            <% }) %>
+                    </div>
+            </br>
+        </br>
+                    <div class="container-fluid fixed-bottom bg-light pt-2">
+                        <div class="row">
+                            <div class="col-sm-7">
+                                <input id="msgContent" type="text" class="form-control" placeholder="Type thy message" width="auto"> 
+                            </div>
+                            <div class="col-sm-1">
+                                <button class="btn btn-secondary mb-2" id="submit_chat" onclick="sendForumMsg()">Send</button>
+                            </div>
+                            <div class="col-sm-2">
+                                <button class="btn btn-secondary mb-2" id="scroller" onclick="scrollBottom()">Scroll to bottom</button>
+                            </div>
+                            <% if(course.creator == user.username) {%>
+                                <div class="col-sm-2">
+                                    <button id="toggle" class="btn btn-danger mb-2 mx-1" onclick="toggleForum()">
+                                        <% if(course.forumDisabled){ %>
+                                            Enable-forum
+                                        <% } else { %>
+                                            Disable-forum
+                                        <% } %>
+                                    </button>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                    <%- include("./partials/foot.ejs") %>
+
+                        <script>
+                            // Get the input field
+                            var input = document.getElementById("msgContent");
+
+                            // Execute a function when the user releases a key on the keyboard
+                            input.addEventListener("keyup", function(event) {
+                            // Number 13 is the "Enter" key on the keyboard
+                            if (event.keyCode === 13) {
+                                // Cancel the default action, if needed
+                                event.preventDefault();
+                                // Trigger the button element with a click
+                                document.getElementById("submit_chat").click();
+                            }
+                            });
+
+                            function sendForumMsg() {
+                                let msgContent = document.getElementById("msgContent").value;
+
+                                fetch("/forum/sendmsg/<%= course.coursecode %>", {
+                                    method: "post",
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ "content": msgContent })
+                                }).then((resp) => {
+                                    resp.text().then((text) => {
+                                        console.log(text);
+
+                                        if (text == "OK") {
+                                            addForumMsg(msgContent, "<%= user.username %>", true);
+                                        } else {
+                                            alert("Message sending failed, please check your internet connection.")
+                                        }
+                                    })
+                                })
+                                document.getElementById("msgContent").value="";
+                            }
+
+                            function scrollBottom() {
+                                window.scrollTo(0,document.body.scrollHeight);
+                                // messages.scrollTop = messages.scrollHeight;
+                            }
+
+                            function addForumMsg(content, sender, isOwnMsg) {
+                                let divtag = document.createElement("div")
+                                if (isOwnMsg) {
+                                    divtag.className = `sent-msg`;
+                                } else {
+                                    divtag.className = `received-msg`;
+                                }
+
+                                document.getElementById("chat").append(divtag)
+
+                                if (sender == "<%= course.creator %>") {
+                                    divtag.innerHTML += `<img src="/images/blackhat.png" class="inlineIcon"><div class="otherBubble other"><b style="color:Tomato;">${sender} (Course Instructor)</b></br>${content}</br></div><span class="other">${new Date().toLocaleString()}</span>`;
+                                } else {
+                                    divtag.innerHTML += `<img src="/images/blackhat.png" class="inlineIcon"><div class="otherBubble other"><b>${sender}</b></br>${content}</br></div><span class="other">${new Date().toLocaleString()}</span>`;
+                                }
+                                scrollBottom()
+                            }
+
+                            function checkNewForumMsgs() {
+                                let recievedMsgs = document.getElementsByClassName("received-msg").length
+                                console.log(recievedMsgs);
+
+                                fetch("/forum/noofmsgs/<%= course.coursecode %>")
+                                    .then((resp) => {
+                                        resp.text().then((text) => {
+                                            if (parseInt(text) > recievedMsgs) {
+                                                getForumMsgs(parseInt(text) - recievedMsgs);
+                                            }
+                                        })
+                                    })
+                            }
+
+                            function getForumMsgs(noOfMsgs) {
+                                fetch("/forum/getmsg/<%= course.coursecode %>", {
+                                    method: "post",
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ "n": noOfMsgs })
+                                }).then((resp) => {
+                                    resp.text().then((text) => {
+                                        let json = JSON.parse(text);
+
+                                        for (let i = 0; i < json.length; i++) {
+                                            addForumMsg(json[i].content, json[i].sender, false);
+                                        }
+                                    })
+                                })
+                            }
+
+                            <% if(course.creator = user.username) {%>
+                                async function toggleForum(){
+                                    let button = document.getElementById("toggle");
+                                    let action = button.innerText;
+
+                                    await fetch("/instructor/toggle-forum/<%= course.coursecode %>", {
+                                        method: "post",
+                                        headers: {
+                                            'Accept': 'application/json',
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({ "action":action })
+                                        }).then((resp) => {
+                                            resp.text().then((text) => {
+                                                alert(text);
+                                            })
+                                        })
+                                
+                                    if(action == "Enable-forum"){
+                                        button.innerText = "Disable-forum";
+                                    }else{
+                                        button.innerText = "Enable-forum";
+                                    }
+                                }
+                            <% } %>
+                            setInterval(checkNewForumMsgs, 2000);
+                            
+                        </script>

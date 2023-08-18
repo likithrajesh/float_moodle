@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<%- include("../partials/head.ejs") %>
+
+    <%- include("../partials/home.ejs") %>
+
+        <head>
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        </head>
+
+        <body class="ml-4">
+        </br></br></br>
+            <h2>Assignments : Course <%= course.name %>
+            </h2>
+
+            <% if(a.length) { %>
+                <% a.forEach(function(assign) {%>
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <div class="card-title">
+                                Title = <%= assign.title %>
+                                    </br>
+                                    Description = <%= assign.description %>
+                                        </br>
+                                        Code = <%= assign.assigncode %>
+                                            </br>
+                                            CreatedAt = <%= assign.createdAt.toLocaleString() %>
+                                                </br>
+                                                Due Deadline = <%= assign.deadline.toLocaleString() %>
+                                                    <!-- </br>
+                         ModifiedAt = <%= assign.updatedAt.toLocaleString() %> -->
+                                                    </br>
+                                                    Weightage(in %) = <%= assign.weightage %>
+                                                        </br>
+                                                        <a href="/instructor/view_submission/<%= assign.assigncode %>">View
+                                                            submissions</a>
+                                                        </br>
+                                                        <a href="/download_all/<%= assign.assigncode %>">Download
+                                                            all submissions</a>
+                                                    
+                                                        </br>
+                                                        </br>
+                                                        Upload graded CSV downloaded from above link</br>
+                                                        <form action="/uploadcsv/<%= assign.assigncode %>" method="post"
+                                                            enctype="multipart/form-data">
+                                                            <div class="custom-file mb-3">
+                                                                <input type="file" name="file" id="file1" required>
+                                                                <label for="file1" id="file-label">Choose file</label>
+                                                            </div>
+                                                            <input type="submit" id="submit-button" value="Submit">
+                                                        </form></br></br>
+                                                        Autograde this assignment</br>
+                                                        <form action="/autograde/<%= assign.assigncode %>" method="post"
+                                                            enctype="multipart/form-data">
+                                                            <div class="custom-file mb-3">
+                                                                <input type="file" name="file" id="file1" required>
+                                                                <label for="file1" id="file-label">Choose file</label>
+                                                            </div>
+                                                            <!-- <label>
+                                                                <input type="radio" name="lang" value="C++"> C++
+                                                            </label>
+                                                            <label>
+                                                                <input type="radio" name="lang" value="python" checked> Python
+                                                            </label>
+                                                            <label>
+                                                                <input type="radio" name="lang" value="java"> Java
+                                                            </label> -->
+                                                        </br>
+                                                            <label for="time">Time limit:</label>
+                                                            <input type="number" name="time" min="0" max="100"
+                                                                default="2" required>
+                                                            <input type="submit" id="submit-button" value="Autograde">
+                                                        </form></br></br>
+
+                            </div>
+                        </div>
+                    </div>
+                    <%}) %>
+                        <% } else { %>
+                            <p>No assignments to show</p>
+                            <% } %>
+
+                                <a href="/instructor/create_assignment/<%= coursecode %>">Create Assignment</a>
+                                <%- include("../partials/foot.ejs") %>
+
+        </body>

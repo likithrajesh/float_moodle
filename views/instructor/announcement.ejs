@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<%- include("../partials/head.ejs") %>
+
+    <%- include("../partials/home.ejs") %>
+
+        <body style="padding-top: 4em; background-color:white;" class="ml-4">
+            <h2>Announcements : <%= course.name %>
+            </h2>
+            <% if(a) { %>
+                <% a.reverse().forEach(function(assign) {%>
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <div class="card-title">
+                                Title = <%= assign.get('title') %>
+                                    </br>
+                                    Description = <%= assign.get('body') %>
+                                        </br>
+                                        Announcement Created At = <%= assign.get('date').toLocaleString() %>
+                                            
+
+                            </div>
+                        </div>
+                    </div>
+                    <%}) %>
+                        <% } else { %>
+                            <p>No announcement to show</p>
+                            <% } %>
+                                <a href="/instructor/create_announcement/<%= coursecode %>">Create Announcement</a>
+                                <%- include("../partials/foot.ejs") %>
+        </body>

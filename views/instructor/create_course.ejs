@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<!-- <h1>Hello <%= user.name %>, your role is <%= user.role %>
+</h1> -->
+<!DOCTYPE html>
+<%- include("../partials/head.ejs") %>
+
+    <%- include("../partials/home.ejs") %>
+
+        <body style="padding-top: 4em; background-color:white;" class="ml-4">
+
+            <h2>create course</h2>
+            <form action="/instructor/create_course" method="post">
+                <div class="form-group">
+                    <label for="name">Course Name</label>
+                    <input type="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Course Description</label>
+                    <input type="text" name="description" required>
+                </div>
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </form>
+            <%- include("../partials/foot.ejs") %>
+
+        </body>

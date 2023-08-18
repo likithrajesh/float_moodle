@@ -1,0 +1,27 @@
+
+    <%- include("./partials/head.ejs") %>
+
+        <%- include("./partials/home.ejs") %>
+            
+
+                <body style="padding-top: 4em; background-color:white;">
+                    <h2>Edit profile</h2>
+                    <% if(message) {%>
+                        <h4>
+                            <%= message.error %>
+                        </h4>
+                        <h4>
+                            <%= message.success %>
+                        </h4>
+                        <% }%>
+                            <form action="/editprofile" method="post">
+                                <label for="name">New Name</label>
+                                <input type="text" name="name" required>
+                                <label for="email">New Email</label>
+                                <input type="text" name="email" required>
+                                <input type="submit" value="Submit">
+                            </form>
+    
+                                <%- include("./partials/foot.ejs") %>
+                                  
+                </body>

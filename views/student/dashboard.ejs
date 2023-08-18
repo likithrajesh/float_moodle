@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<%- include("../partials/head.ejs") %>
+
+    <%- include("../partials/home.ejs") %>
+
+        <body style="padding-top: 4em; background-color:white;"class="ml-4">
+            <div class="container-fluid">
+                <h2>Enrolled Courses</h2>
+                <div class="row">
+                    <% if(courses) { %>
+                        <% courses.forEach(function(course) {%>
+                            <div class="col-md-5 m-2">
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <div class="card-title">
+                                            <div class="row justify-content-between">
+                                                <div class="col-auto"><h3><%= course.course.name %></h3></div>
+                                                <% if(user.ta_courses.includes(course.course.coursecode)) { %>
+                                                    <div class="col-auto"><h4>TA</h4></div>
+                                                <% } %>
+                                            </div>
+                                                Description = <%= course.course.description %>
+                                                    </br>
+                                                    Code = <%= course.course.coursecode %>
+                                                        </br>
+                                                        <div class="progress" style="width: 60%;">
+                                                            <div class="progress-bar progress-bar-striped"
+                                                                role="progressbar" aria-valuenow="<%=course.completed%>"
+                                                                aria-valuemin="0" aria-valuemax="100"
+                                                                style="width: <%= course.completed%>%">
+                                                                <%=course.completed%>%
+                                                            </div>
+                                                        </div>
+                                                        <a href="/student/assignments/<%= course.course.coursecode %>">View
+                                                            all assignments</a>
+                                                        </br>
+                                                        <a
+                                                            href="/student/announcements/<%= course.course.coursecode %>">View
+                                                            all announcements</a>
+                                                        </br>
+                                                        <a 
+                                                            href="/forum/<%= course.course.coursecode %>">View forum</a>
+                                                        </br>
+                                                        <a 
+                                                            href="/student/grade/<%= course.course.coursecode %>">View Grades</a>
+                                                        <!-- <a href="/instructor/create_assignment/<%= course.course.coursecode %>">Create Assignments</a> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <%}) %>
+                                <% } else { %>
+                                    <p>No Courses to show</p>
+                                    <% } %>
+                </div>
+
+
+            </div>
+            <%- include("../partials/foot.ejs") %>
+        </body>
